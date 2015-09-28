@@ -1,4 +1,4 @@
-var playerSpeed = 32;
+var playerSpeed = 100;
 var tileSize = 32;
 var backgroundX = 160;
 var backgroundY = 220;
