@@ -5,6 +5,7 @@ Game.prototype = {
         game.state.add("MainMenu", MainMenu);
         game.state.add("Lobby", Lobby);
         game.state.add("Level1Risky", Level1Risky);
+        game.state.add("Office", Office);
         game.state.start("MainMenu");
     }
 };

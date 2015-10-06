@@ -3,12 +3,11 @@ var tweenTime = 250;
 var backgroundX = 0;
 var backgroundY = 0;
 
-function Level1Risky() {};
+function Level1Risky() {}
 
 Level1Risky.prototype = {
     preload: function() {
         console.log("Risky but Rewarding");
-        this.game.load.image('tree', 'assets/images/risky_tree.png');
         this.game.load.image('player', 'assets/images/playersprite.png');
         this.game.load.spritesheet('door_animation', 'assets/images/animation/risky_door_animation.png', 32, 32);
 
@@ -40,6 +39,7 @@ Level1Risky.prototype = {
     update: function() {
     },
 
+    //Player function so this is the player object
     handleDoor: function(doorX, doorY) {
         var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
         newDoor.open();
@@ -48,6 +48,7 @@ Level1Risky.prototype = {
         // Remove door obstacle so player can go through
         newDoor.events.onAnimationComplete.add(function() {
             this.map.removeTile(doorX, doorY, this.obstacles);
+            this.goThroughDoor(doorX, doorY);
         }, this);
     }
 
