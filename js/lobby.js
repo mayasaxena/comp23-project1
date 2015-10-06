@@ -1,4 +1,4 @@
-// function Lobby() {};
+function Lobby() {};
 
 Lobby.prototype = {
     preload: function() {
@@ -28,12 +28,14 @@ Lobby.prototype = {
         this.game.renderer.renderSession.roundPixels = true
     },
 
-    // handleDoor is a player function so 'this' is the player object
+    // handleDoor is a Player function so 'this' is the player object
     handleDoor: function(doorX, doorY) {
-        // Creates door sprite and animates open
+        // Comment back in for other level
+        // if (doorX == 2) {
+            var state = "Level1Risky";
+        // }
         var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
         newDoor.open();
-
         // Put down placeholder tile to prevent movement onto door while opening
         this.map.putTile(11, doorX, doorY, this.obstacles);
         // Remove door obstacle so player can go through
