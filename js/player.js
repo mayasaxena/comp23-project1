@@ -1,9 +1,9 @@
 var tileSize = 32;
 var tweenTime = 250;
-var backgroundX = 0;
-var backgroundY = 0;
 var size = { x: 32, y: 32 };
 var stateChangeDelay = 500;
+var doorIndex = 2;
+var matIndex = 22;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
@@ -130,10 +130,14 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
     var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
     if (tile) {
-        if (tile.index == 2) {
-            this.handleDoor(newPos.x, newPos.y);
+        if (tile.index == doorIndex) {
+            this.handleDoor(newPos.x, newPos.y, true);
+            return false;
+        } else if (tile.index == matIndex) {
+            this.handleDoor(newPos.x, newPos.y, false);
             return false;
         }
+
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     } else {
         return true;
@@ -144,23 +148,37 @@ Player.prototype.stopSnap = function() {
     this.isSnapping = false;
 }
 
-Player.prototype.handleDoor = function(doorX, doorY) {}
+Player.prototype.handleDoor = function(doorX, doorY, goingIn) {}
 
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 
 
 Player.prototype.goThroughDoor = function(x, y, state) {
-    var tween = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
+    var data = {
+            x: this.xCoord,
+            y: this.yCoord
+    }
+    localStorage.setItem(this.game.state.current, JSON.stringify(data));
+    var move = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 
                                                       Phaser.Easing.Linear.None, 
                                                       true);
-    tween.onComplete.add(function() {
-        this.game.time.events.add(stateChangeDelay, function() {
-            this.game.state.start(state);
-        }, this);
+    // Start at -tileSize to stop user from walking out from under rectangle
+    var graphics = this.game.add.graphics(0, 0);
+    graphics.beginFill(0x000000);
+    graphics.drawRect(0, 0, 1280, this.obstacles.height);
+    graphics.alpha = 0;
+    graphics.endFill();
+    
+    var fadeOut = this.game.add.tween(graphics).to({ alpha: 1 }, 500);   
+    move.chain(fadeOut);
+
+    fadeOut.onComplete.add(function() {
+        this.game.state.start(state);
     }, this);
+
 }
 
 var moveType = {
