@@ -8,6 +8,7 @@ Lobby.prototype = {
 
         this.game.load.tilemap('background', 'assets/tilemaps/maps/lobby.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tilemaps/tiles/risky_tileset.png');
+        this.game.load.image('slow_tiles', 'assets/tilemaps/tiles/slow_tileset.png');
     },
 
     create: function() {
@@ -46,11 +47,17 @@ Lobby.prototype = {
         tween.start();
     },
 
-    // handleDoor is a Player function so 'this' is the player object
+
+    // handles both doors in the lobby
     handleDoor: function(doorX, doorY, goingIn, open) {
+        var state;
+        if(doorX == 2){
+            state = 'Level1Risky';
+        }
+        else if(doorX == 7){
+            state = 'Level1Slow';
+        }
         if (goingIn && !open) {
-            // Change for both doors
-            var state = 'Level1Risky'
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
             // Put down placeholder tile to prevent movement onto door while opening

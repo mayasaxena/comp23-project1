@@ -6,6 +6,7 @@ var doorIndex = 2;
 var doorwayIndex = 10;
 var matIndex = 22;
 
+
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.constructor = Player;
@@ -133,13 +134,20 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     if (tile) {
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
+            console.log("1");
             return false;
-        } else if (tile.index == doorwayIndex) {
+        } else if (tile.index == doorwayIndexSlow) {
+            this.handleDoor(newPos.x, newPos.y, true);
+            console.log("entering slow level");
+            return false;
+        }else if (tile.index == doorwayIndex) {
             this.handleDoor(newPos.x, newPos.y, true, true);
             return false;
+            console.log("2");
         } else if (tile.index == matIndex) {
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
+            console.log("3");
         }
 
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
