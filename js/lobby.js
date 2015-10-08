@@ -1,5 +1,3 @@
-var lobbyKey = 'Lobby';
-
 function Lobby() {};
 
 Lobby.prototype = {
@@ -13,7 +11,7 @@ Lobby.prototype = {
     },
 
     create: function() {
-        var lobbyData = JSON.parse(localStorage.getItem(lobbyKey));
+        var lobbyData = JSON.parse(localStorage.getItem(this.game.state.current));
         if (lobbyData) {
             this.startX = lobbyData.x;
             this.startY = lobbyData.y;
@@ -38,26 +36,22 @@ Lobby.prototype = {
         this.game.camera.bounds = null;
         this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN);
         this.game.renderer.renderSession.roundPixels = true;
+
+        var graphics = this.game.add.graphics(0, 0);
+        graphics.beginFill(0x000000);
+        graphics.drawRect(0, 0, this.game.width * 2, this.game.height);
+        graphics.alpha = 1;
+        graphics.endFill();
+        var tween = this.game.add.tween(graphics).to({ alpha: 0 }, 500);
+        tween.start();
     },
 
-    // shutdown: function() {
-    //     var lobbyData = {
-    //         x: this.player.x / tileSize,
-    //         y: this.player.y / tileSize
-    //     }
-    //     localStorage.setItem(lobbyKey, JSON.stringify(lobbyData));
-    //     localStorage.setItem('x', this.player.x / tileSize);
-    //     localStorage.setItem('y', this.player.y / tileSize);
-
-    // },
 
     // handleDoor is a Player function so 'this' is the player object
-    handleDoor: function(doorX, doorY, goingIn) {
-        if (goingIn) {
-        // Comment back in for other level
-            // if (doorX == 2) {
-                var state = "Level1Risky";
-            // }
+    handleDoor: function(doorX, doorY, goingIn, open) {
+        if (goingIn && !open) {
+            // Change for both doors
+            var state = 'Level1Risky'
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
             // Put down placeholder tile to prevent movement onto door while opening
@@ -65,7 +59,7 @@ Lobby.prototype = {
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
-                this.goThroughDoor(doorX, doorY, state);
+                this.goThroughDoor(doorX, doorY, state, goingIn);
             }, this);
         }
     }

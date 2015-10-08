@@ -1,5 +1,3 @@
-var officeKey = 'Office'
-
 function Office() {} 
 
 Office.prototype = {
@@ -13,7 +11,7 @@ Office.prototype = {
     },
 
     create: function() {
-        var officeData = JSON.parse(localStorage.getItem(officeKey));
+        var officeData = JSON.parse(localStorage.getItem(this.game.state.current));
         if (officeData) {
             this.startX = officeData.x;
             this.startY = officeData.y;
@@ -40,22 +38,19 @@ Office.prototype = {
         this.game.camera.bounds = null;
         this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN);
         this.game.renderer.renderSession.roundPixels = true;
+
+        var graphics = this.game.add.graphics(0, 0);
+        graphics.beginFill(0x000000);
+        graphics.drawRect(0, 0, this.game.width * 2, this.game.height);
+        graphics.alpha = 1;
+        graphics.endFill();
+        var tween = this.game.add.tween(graphics).to({ alpha: 0 }, 500);
+        tween.start();
     },
 
-    // shutdown: function() {
-    //     var officeData = {
-    //         x: this.player.x / tileSize,
-    //         y: this.player.y / tileSize
-    //     }
-    //     localStorage.setItem(officeKey, JSON.stringify(officeData));
-    //     localStorage.setItem('x', this.player.x / tileSize);
-    //     localStorage.setItem('y', this.player.y / tileSize);
-
-    // },
-
-    handleDoor: function(doorX, doorY, goingIn) {
+    handleDoor: function(doorX, doorY, goingIn, open) {
         var state = "Level1Risky";
-        if (goingIn) {
+        if (goingIn && !open) {
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
             // Put down placeholder tile to prevent movement onto door while opening
@@ -63,10 +58,10 @@ Office.prototype = {
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
-                this.goThroughDoor(doorX, doorY, state);
+                this.goThroughDoor(doorX, doorY, state, goingIn);
             }, this);
         } else {
-            this.goThroughDoor(doorX, doorY, state);
+            this.goThroughDoor(doorX, doorY, state, goingIn);
         }
     }
 }

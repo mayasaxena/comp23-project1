@@ -3,6 +3,7 @@ var tweenTime = 250;
 var size = { x: 32, y: 32 };
 var stateChangeDelay = 500;
 var doorIndex = 2;
+var doorwayIndex = 10;
 var matIndex = 22;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -133,6 +134,9 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
             return false;
+        } else if (tile.index == doorwayIndex) {
+            this.handleDoor(newPos.x, newPos.y, true, true);
+            return false;
         } else if (tile.index == matIndex) {
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
@@ -148,27 +152,42 @@ Player.prototype.stopSnap = function() {
     this.isSnapping = false;
 }
 
-Player.prototype.handleDoor = function(doorX, doorY, goingIn) {}
+Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
 
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 
 
-Player.prototype.goThroughDoor = function(x, y, state) {
+Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     var data = {
             x: this.xCoord,
             y: this.yCoord
     }
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
+
+    if (goingIn) {
+        var doorPosString = x + "," + y;
+        var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
+        if (openDoors) {
+            var pos = openDoors.indexOf(doorPosString);
+            if (pos == -1) {
+                openDoors.push(doorPosString);
+            }
+        } else {
+            openDoors = [doorPosString];
+        }
+        localStorage.setItem(this.game.state.current + "Doors", JSON.stringify(openDoors));
+    }
+
     var move = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 
                                                       Phaser.Easing.Linear.None, 
                                                       true);
-    // Start at -tileSize to stop user from walking out from under rectangle
+    
     var graphics = this.game.add.graphics(0, 0);
     graphics.beginFill(0x000000);
-    graphics.drawRect(0, 0, 1280, this.obstacles.height);
+    graphics.drawRect(0, 0, 1280, this.game.height);
     graphics.alpha = 0;
     graphics.endFill();
     

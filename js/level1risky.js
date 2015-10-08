@@ -1,5 +1,3 @@
-var riskyKey = 'Level1Risky';
-
 var tileSize = 32;
 var tweenTime = 250;
 var backgroundX = 0;
@@ -14,7 +12,7 @@ Level1Risky.prototype = {
     },
 
     create: function() {
-        var level1Data = JSON.parse(localStorage.getItem(riskyKey));
+        var level1Data = JSON.parse(localStorage.getItem(this.game.state.current));
         if (level1Data) {
             this.startX = level1Data.x;
             this.startY = level1Data.y;
@@ -33,12 +31,22 @@ Level1Risky.prototype = {
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
+
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;
 
-        this.overs = this.map.createLayer("Roof");
+        this.overhead = this.map.createLayer("Roof");
+        
+        var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
+        if (openDoors) {
+            for (var i = 0; i < openDoors.length; i++) {
+                var doorPos = openDoors[i].split(',');
+                this.map.putTile(10, doorPos[0], doorPos[1], this.obstacles);
+                this.map.putTile(10, doorPos[0], doorPos[1], this.overhead);
+            };
+        }
 
         this.game.camera.bounds = null;
         this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN);
@@ -46,7 +54,7 @@ Level1Risky.prototype = {
 
         var graphics = this.game.add.graphics(0, 0);
         graphics.beginFill(0x000000);
-        graphics.drawRect(0, 0, this.world.width, this.world.height);
+        graphics.drawRect(0, 0, this.game.width * 2, this.game.height);
         graphics.alpha = 1;
         graphics.endFill();
         var tween = this.game.add.tween(graphics).to({ alpha: 0 }, 500);
@@ -54,10 +62,9 @@ Level1Risky.prototype = {
     },
 
     //Player function so this is the player object
-    handleDoor: function(doorX, doorY, goingIn) {
-        var state;
-        if (goingIn) {
-            state = "Office";
+    handleDoor: function(doorX, doorY, goingIn, open) {
+        var state = "Office";
+        if (goingIn && !open) {
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
             // Put down placeholder tile to prevent movement onto door while opening
@@ -65,11 +72,13 @@ Level1Risky.prototype = {
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
-                this.goThroughDoor(doorX, doorY, state);
+                this.goThroughDoor(doorX, doorY, state, goingIn);
             }, this);
         } else {
-            state = "Lobby";
-            this.goThroughDoor(doorX, doorY, state);
+            if (!goingIn) {
+                state = 'Lobby';
+            }
+            this.goThroughDoor(doorX, doorY, state, goingIn);
         }
     }
 
