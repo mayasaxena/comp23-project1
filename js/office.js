@@ -3,11 +3,7 @@ function Office() {}
 Office.prototype = {
     preload: function() {
         console.log("Office");
-        this.game.load.image('player', 'assets/images/playersprite.png');
-
-
-        this.game.load.tilemap('background', 'assets/tilemaps/maps/office.json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('tiles', 'assets/tilemaps/tiles/risky_tileset.png');
+        this.game.load.tilemap('office', 'assets/tilemaps/maps/office.json', null, Phaser.Tilemap.TILED_JSON);
     },
 
     create: function() {
@@ -21,7 +17,7 @@ Office.prototype = {
             this.startY = 4;
         }
 
-        this.map = this.game.add.tilemap('background');
+        this.map = this.game.add.tilemap('office');
         this.map.addTilesetImage('risky_tileset', 'tiles');
 
         this.floors = this.map.createLayer("Floor");
@@ -48,6 +44,7 @@ Office.prototype = {
         tween.start();
     },
 
+    // handleDoor is a Player function so 'this' is the player object
     handleDoor: function(doorX, doorY, goingIn, open) {
         var state = "Level1Risky";
         if (goingIn && !open) {

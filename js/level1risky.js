@@ -31,12 +31,12 @@ Level1Risky.prototype = {
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
-
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;
 
+        // Create layer after player so it renders above
         this.overhead = this.map.createLayer("Roof");
         
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
@@ -44,6 +44,7 @@ Level1Risky.prototype = {
             for (var i = 0; i < openDoors.length; i++) {
                 var doorPos = openDoors[i].split(',');
                 this.map.putTile(10, doorPos[0], doorPos[1], this.obstacles);
+                // Lay duplicate tiles so one collides and one goes over player
                 this.map.putTile(10, doorPos[0], doorPos[1], this.overhead);
             };
         }
@@ -61,7 +62,7 @@ Level1Risky.prototype = {
         tween.start();
     },
 
-    //Player function so this is the player object
+    // handleDoor is a Player function so 'this' is the player object
     handleDoor: function(doorX, doorY, goingIn, open) {
         var state = "Office";
         if (goingIn && !open) {
@@ -81,5 +82,4 @@ Level1Risky.prototype = {
             this.goThroughDoor(doorX, doorY, state, goingIn);
         }
     }
-
 };

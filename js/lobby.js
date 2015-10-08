@@ -46,7 +46,6 @@ Lobby.prototype = {
         tween.start();
     },
 
-
     // handleDoor is a Player function so 'this' is the player object
     handleDoor: function(doorX, doorY, goingIn, open) {
         if (goingIn && !open) {

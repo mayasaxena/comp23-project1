@@ -153,10 +153,8 @@ Player.prototype.stopSnap = function() {
 }
 
 Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
-
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
-
 
 Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     var data = {
@@ -184,7 +182,6 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
                                                       tweenTime, 
                                                       Phaser.Easing.Linear.None, 
                                                       true);
-    
     var graphics = this.game.add.graphics(0, 0);
     graphics.beginFill(0x000000);
     graphics.drawRect(0, 0, 1280, this.game.height);
@@ -197,7 +194,6 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     fadeOut.onComplete.add(function() {
         this.game.state.start(state);
     }, this);
-
 }
 
 var moveType = {
