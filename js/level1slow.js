@@ -20,7 +20,7 @@ Level1Slow.prototype = {
             this.startY = level1Data.y;
             
         } else {
-            this.startX = 0;
+            this.startX = 1;
             this.startY = 7;
         }
 

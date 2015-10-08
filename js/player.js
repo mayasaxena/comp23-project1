@@ -5,6 +5,8 @@ var stateChangeDelay = 500;
 var doorIndex = 2;
 var doorwayIndex = 10;
 var matIndex = 22;
+var edgeIndex = 1;
+var fileIndex = 17;
 
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -134,20 +136,21 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     if (tile) {
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
-            console.log("1");
-            return false;
-        } else if (tile.index == doorwayIndexSlow) {
-            this.handleDoor(newPos.x, newPos.y, true);
-            console.log("entering slow level");
+            console.log("door index");
             return false;
         }else if (tile.index == doorwayIndex) {
             this.handleDoor(newPos.x, newPos.y, true, true);
-            return false;
-            console.log("2");
+            console.log("doorway index");
+            return false;    
         } else if (tile.index == matIndex) {
+            console.log("mat index");
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
-            console.log("3");
+        } else if (tile.index == fileIndex) {
+            console.log("file index");
+            this.handleFile();
+            return false;
+            
         }
 
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
@@ -161,6 +164,7 @@ Player.prototype.stopSnap = function() {
 }
 
 Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
+Player.prototype.handleFile = function() {};
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 
