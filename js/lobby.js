@@ -54,7 +54,7 @@ Lobby.prototype = {
         if(doorX == 2){
             state = 'Level1Risky';
         }
-        else if(doorX == 7){
+        else if(doorX == 6){
             state = 'Level1Slow';
         }
         if (goingIn && !open) {
