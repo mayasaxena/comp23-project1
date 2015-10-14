@@ -1,5 +1,4 @@
 var tileSize = 32;
-var tweenTime = 250;
 var backgroundX = 0;
 var backgroundY = 0;
 

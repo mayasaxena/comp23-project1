@@ -1,5 +1,5 @@
 var tileSize = 32;
-var tweenTime = 250;
+var tweenTime = 500;
 var size = { x: 32, y: 32 };
 var stateChangeDelay = 500;
 var doorIndex = 2;
@@ -7,6 +7,7 @@ var doorwayIndex = 10;
 var matIndex = 22;
 var edgeIndex = 1;
 var fileIndex = 17;
+var frameRate = 7;
 
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -14,12 +15,16 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.constructor = Player;
 
 function Player(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'player');
+    Phaser.Sprite.call(this, game, x, y, 'walk');
     this.game.add.existing(this);
+    this.animations.add("front", [1, 0, 2, 0]);
+    this.animations.add("back", [4, 3, 5, 3]);
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.destination = null;
+
+    this.currAnimation = null;
 }
 
 Player.prototype.update = function() {
@@ -47,6 +52,7 @@ Player.prototype.update = function() {
         else if(this.isMoving() && this.justReachedDestination() && this.moveIntention &&
                 !this.canMoveDirectionFromCurrentTile(this.moveIntention)) {
             this.stopMoving();
+            console.log("wall");
         }
         // Destination reached, but set new destination and keep going.
         else if(this.isMoving() && this.justReachedDestination() && this.moveIntention &&
@@ -109,6 +115,12 @@ Player.prototype.stopMoving = function() {
 
 Player.prototype.snapToTile = function(x, y) {
     this.isSnapping = true;
+    
+    if (y < this.yCoord) {
+        this.currAnimation = this.animations.play("back", frameRate, true);
+    } else if (y > this.yCoord) {
+        this.currAnimation = this.animations.play("front", frameRate, true);
+    }
     var tween = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 
@@ -136,14 +148,11 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     if (tile) {
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
-            console.log("door index");
             return false;
-        }else if (tile.index == doorwayIndex) {
+        } else if (tile.index == doorwayIndex) {
             this.handleDoor(newPos.x, newPos.y, true, true);
-            console.log("doorway index");
             return false;    
         } else if (tile.index == matIndex) {
-            console.log("mat index");
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
         } else if (tile.index == fileIndex){
@@ -194,6 +203,10 @@ Player.prototype.moveFile = function(newPos, direction){
 
 Player.prototype.stopSnap = function() {
     this.isSnapping = false;
+    if (this.currAnimation && !this.isMoving()) {
+        this.currAnimation.stop();
+        this.currAnimation.setFrame(3);
+    } 
 }
 
 Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
@@ -222,7 +235,11 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
         }
         localStorage.setItem(this.game.state.current + "Doors", JSON.stringify(openDoors));
     }
-
+    if (y < this.yCoord) {
+        this.currAnimation = this.animations.play("back", frameRate);
+    } else if (y > this.yCoord) {
+        this.currAnimation = this.animations.play("front", frameRate);
+    }
     var move = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 

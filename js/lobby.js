@@ -3,8 +3,9 @@ function Lobby() {};
 Lobby.prototype = {
     preload: function() {
         console.log("Lobby");
-        this.game.load.image('player', 'assets/images/playersprite.png');
+        this.game.load.image('player', 'assets/images/player_new.png');
         this.game.load.spritesheet('door_animation', 'assets/images/animation/risky_door_animation.png', 32, 32);
+        this.game.load.spritesheet('walk', 'assets/images/animation/player_front.png', 32, 32);
 
         this.game.load.tilemap('background', 'assets/tilemaps/maps/lobby.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tilemaps/tiles/risky_tileset.png');
