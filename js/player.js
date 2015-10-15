@@ -19,6 +19,8 @@ function Player(game, x, y) {
     this.game.add.existing(this);
     this.animations.add("front", [1, 0, 2, 0]);
     this.animations.add("back", [4, 3, 5, 3]);
+    this.animations.add("left", [7, 6, 8, 6]);
+    this.animations.add("right", [10, 9, 11, 9]);
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -52,7 +54,6 @@ Player.prototype.update = function() {
         else if(this.isMoving() && this.justReachedDestination() && this.moveIntention &&
                 !this.canMoveDirectionFromCurrentTile(this.moveIntention)) {
             this.stopMoving();
-            console.log("wall");
         }
         // Destination reached, but set new destination and keep going.
         else if(this.isMoving() && this.justReachedDestination() && this.moveIntention &&
@@ -120,6 +121,10 @@ Player.prototype.snapToTile = function(x, y) {
         this.currAnimation = this.animations.play("back", frameRate, true);
     } else if (y > this.yCoord) {
         this.currAnimation = this.animations.play("front", frameRate, true);
+    } else if (x < this.xCoord) {
+        this.currAnimation = this.animations.play("left", frameRate, true);
+    } else if (x > this.xCoord) {
+        this.currAnimation = this.animations.play("right", frameRate, true);
     }
     var tween = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
@@ -236,9 +241,13 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
         localStorage.setItem(this.game.state.current + "Doors", JSON.stringify(openDoors));
     }
     if (y < this.yCoord) {
-        this.currAnimation = this.animations.play("back", frameRate);
+        this.currAnimation = this.animations.play("back", frameRate, true);
     } else if (y > this.yCoord) {
-        this.currAnimation = this.animations.play("front", frameRate);
+        this.currAnimation = this.animations.play("front", frameRate, true);
+    } else if (x < this.xCoord) {
+        this.currAnimation = this.animations.play("left", frameRate, true);
+    } else if (x > this.xCoord) {
+        this.currAnimation = this.animations.play("right", frameRate, true);
     }
     var move = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
