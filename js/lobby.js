@@ -1,3 +1,5 @@
+var facingForwardIndex = 3;
+
 function Lobby() {};
 
 Lobby.prototype = {
@@ -17,10 +19,12 @@ Lobby.prototype = {
         if (lobbyData) {
             this.startX = lobbyData.x;
             this.startY = lobbyData.y;
+            this.facing = lobbyData.facing;
             
         } else {
             this.startX = 4;
             this.startY = 5;
+            this.facing = facingForwardIndex;
         }
         this.map = this.game.add.tilemap('background');
         this.map.addTilesetImage('risky_tileset', 'tiles');
@@ -30,7 +34,7 @@ Lobby.prototype = {
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
-        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
+        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize, this.facing);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;

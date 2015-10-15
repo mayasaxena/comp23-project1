@@ -15,10 +15,12 @@ Level1Risky.prototype = {
         if (level1Data) {
             this.startX = level1Data.x;
             this.startY = level1Data.y;
+            this.facing = level1Data.facing;
             
         } else {
             this.startX = 4;
             this.startY = 8;
+            this.facing = facingForwardIndex;
         }
 
         this.map = this.game.add.tilemap('hallway');
@@ -30,7 +32,7 @@ Level1Risky.prototype = {
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
-        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
+        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize, this.facing);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;

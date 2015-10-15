@@ -11,10 +11,12 @@ Office.prototype = {
         if (officeData) {
             this.startX = officeData.x;
             this.startY = officeData.y;
+            this.facing = officeData.facing;
             
         } else {
             this.startX = 2;
             this.startY = 4;
+            this.facing = facingForwardIndex;
         }
 
         this.map = this.game.add.tilemap('office');
@@ -26,7 +28,7 @@ Office.prototype = {
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
-        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
+        this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize, this.facing);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;

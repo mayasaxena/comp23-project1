@@ -14,8 +14,8 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.constructor = Player;
 
-function Player(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'walk');
+function Player(game, x, y, facing) {
+    Phaser.Sprite.call(this, game, x, y, 'walk', facing);
     this.game.add.existing(this);
     this.animations.add("front", [1, 0, 2, 0]);
     this.animations.add("back", [4, 3, 5, 3]);
@@ -221,9 +221,17 @@ Player.prototype.obstacles = null;
 Player.prototype.objects = null;
 
 Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
+    var facing;
+    if (goingIn) {
+        facing = moveType.UP;
+    } else {
+        facing = moveType.DOWN;
+    }
+
     var data = {
             x: this.xCoord,
-            y: this.yCoord
+            y: this.yCoord,
+            facing: facing
     }
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
 
@@ -268,9 +276,21 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     }, this);
 }
 
+Player.prototype.opposite = function(move) {
+    if (move === moveType.UP) {
+        return moveType.DOWN;
+    } else if (move === moveType.DOWN) {
+        return moveType.UP;
+    } else if (move === moveType.LEFT) {
+        return moveType.RIGHT;
+    } else if (move === moveType.RIGHT) {
+        return moveType.LEFT;
+    }
+}
+
 var moveType = {
-    'UP': 1,
-    'DOWN': 2,
-    'LEFT': 4,
-    'RIGHT': 8
+    'UP': 12,
+    'DOWN': 3,
+    'LEFT': 6,
+    'RIGHT': 9
 };
