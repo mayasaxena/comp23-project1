@@ -1,5 +1,5 @@
 var tileSize = 32;
-var tweenTime = 500;
+var tweenTime = 490;
 var size = { x: 32, y: 32 };
 var stateChangeDelay = 500;
 var doorIndex = 2;
