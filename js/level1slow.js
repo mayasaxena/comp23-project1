@@ -9,7 +9,6 @@ function Level1Slow() {}
 Level1Slow.prototype = {
     preload: function() {
         console.log("Slow");
-        this.game
         this.game.load.tilemap('slowRoom', 'assets/tilemaps/maps/slow_tilemap.json', null, Phaser.Tilemap.TILED_JSON);
     },
 
@@ -28,15 +27,16 @@ Level1Slow.prototype = {
         this.map.addTilesetImage('slow_tileset', 'slow_tiles');
 
         this.floors = this.map.createLayer("Floor");
-        this.objects = this.map.createLayer("Files");
-        this.obstacles = this.map.createLayer("Walls");
+        //this.objects = this.map.createLayer("Files");
+        this.obstacles = this.map.createLayer("Collisions");
 
-        this.map.setCollisionByExclusion([], true, this.objects);
-        this.map.setCollisionByExclusion([], true, this.obstacles);
+       // this.map.setCollisionByExclusion([], true, this.objects);
+        this.map.setCollisionByExclusion([17], true, this.obstacles);
 
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
         this.player.map = this.map;
         this.player.obstacles = this.obstacles;
+        this.player.objects = this.objects;
         this.player.handleDoor = this.handleDoor;
 
         // Create layer after player so it renders above

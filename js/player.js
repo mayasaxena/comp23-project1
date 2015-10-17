@@ -146,17 +146,50 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
             console.log("mat index");
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
-        } else if (tile.index == fileIndex) {
-            console.log("file index");
-            this.handleFile();
-            return false;
-            
+        } else if (tile.index == fileIndex){
+            console.log("on file");
+            //newPos is a file, so that becomes the current tile 
+            return this.canFileMoveDirection(newPos, direction);
         }
-
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
-    } else {
+    }else {
         return true;
     }
+}
+Player.prototype.canFileMoveDirection = function(currTile, direction){
+    //new Pos is the potential new position of the file
+    var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
+    var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
+    //return (this.map.collideIndexes.indexOf(tile.index) == -1);
+    if (tile) {
+        //will look into uncomenting this section later
+       /* if (tile.index == doorIndex) {
+            this.handleDoor(newPos.x, newPos.y, true);
+            console.log("door index");
+            return false;
+        }else if (tile.index == doorwayIndex) {
+            this.handleDoor(newPos.x, newPos.y, true, true);
+            console.log("doorway index");
+            return false;    
+        } else if (tile.index == matIndex) {
+            console.log("mat index");
+            this.handleDoor(newPos.x, newPos.y, false);
+            return false;
+        } else if (tile.index == fileIndex){
+            console.log("on file");
+            //newPos is a file, so that becomes the current tile 
+            return this.canFileMoveDirection(newPos, direction);
+        }*/
+        return (this.map.collideIndexes.indexOf(tile.index) == -1);
+    }else {
+        this.moveFile(newPos, direction);
+        return true;
+    }
+}
+
+Player.prototype.moveFile = function(newPos, direction){
+    //this is where we need to move the file image
+    //file needs to move to newPos
 }
 
 Player.prototype.stopSnap = function() {
@@ -167,6 +200,7 @@ Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
 Player.prototype.handleFile = function() {};
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
+Player.prototype.objects = null;
 
 Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     var data = {
