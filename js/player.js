@@ -180,9 +180,10 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
 Player.prototype.canFileMoveDirection = function(currTile, direction){
     //new Pos is the potential new position of the file
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
-    var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
+    var tile = (this.map.getTile(newPos.x, newPos.y, this.Collisions));
     //return (this.map.collideIndexes.indexOf(tile.index) == -1);
     if (tile) {
+        console.log("tile index is: "+ tile.index)
         //will look into uncomenting this section later
        /* if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
@@ -201,10 +202,22 @@ Player.prototype.canFileMoveDirection = function(currTile, direction){
             //newPos is a file, so that becomes the current tile 
             return this.canFileMoveDirection(newPos, direction);
         }*/
+        if(tile.index == fileIndex){
+            console.log("hit another file?");
+            return false;
+        }
+        if(tile.index == floorIndex){
+            console.log("should be able to move, nothing in way");
+            //calling my handleFile
+            this.handleFile(currTile, newPos);
+            return true;
+        }
+        console.log("what else could this be? " + tile.index);
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     }else {
         //pass in currtile as the old position
-        this.handleFile(currTile, newPos);
+        console.log("null tile")
+        //this.handleFile(currTile, newPos);
         return true;
     }
 }
@@ -217,13 +230,9 @@ Player.prototype.stopSnap = function() {
     } 
 }
 
-Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {};
-Player.prototype.handleFile = function() {};
-<<<<<<< HEAD
 Player.prototype.handleAdmin = function() {};
-=======
-Player.prototype.handleDoor = function() {};
->>>>>>> created file.js, file handler
+Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
+Player.prototype.handleFile = function(oldPos, newPos) {};
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 Player.prototype.objects = null;
