@@ -9,6 +9,8 @@ var edgeIndex = 1;
 var fileIndex = 17;
 var frameRate = 7;
 var adminIndex = 30;
+var floorIndex = 7;
+
 
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -201,14 +203,10 @@ Player.prototype.canFileMoveDirection = function(currTile, direction){
         }*/
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     }else {
-        this.moveFile(newPos, direction);
+        //pass in currtile as the old position
+        this.handleFile(currTile, newPos);
         return true;
     }
-}
-
-Player.prototype.moveFile = function(newPos, direction){
-    //this is where we need to move the file image
-    //file needs to move to newPos
 }
 
 Player.prototype.stopSnap = function() {
@@ -221,7 +219,11 @@ Player.prototype.stopSnap = function() {
 
 Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {};
 Player.prototype.handleFile = function() {};
+<<<<<<< HEAD
 Player.prototype.handleAdmin = function() {};
+=======
+Player.prototype.handleDoor = function() {};
+>>>>>>> created file.js, file handler
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 Player.prototype.objects = null;

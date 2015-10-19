@@ -37,6 +37,8 @@ Level1Slow.prototype = {
         this.player.obstacles = this.obstacles;
         this.player.objects = this.objects;
         this.player.handleDoor = this.handleDoor;
+        this.player.map.createFromTiles(fileIndex, floorIndex, this.obstacles);
+    
 
         // Create layer after player so it renders above
         this.overhead = this.map.createLayer("Roof");
@@ -86,5 +88,21 @@ Level1Slow.prototype = {
             }
             this.goThroughDoor(doorX, doorY, state, goingIn);
         }
+    },
+
+    handleFile: function(oldPos, newPos){
+        //moving file up
+        var newFile = new File (this.game, oldPos.x * tileSize, oldPos.y * tileSize);
+        if(oldPos.x < newPos.x){
+            newFile.moveUp;
+        }
+
     }
 };
+
+
+
+
+
+
+
