@@ -39,6 +39,23 @@ Level1Risky.prototype = {
 
         // Create layer after player so it renders above
         this.overhead = this.map.createLayer("Roof");
+
+        this.doors = [];
+        for (var i = 0; i < this.map.layers[2].data.length; i++) {
+            var filtered = this.map.layers[2].data[i].filter(function(tile) {
+                if (tile.index == doorIndex) {
+                    return true;
+                }
+                return false;
+            });
+            this.doors = this.doors.concat(filtered);
+        }
+
+        this.doors = this.doors.map(function(tile) {
+            return "x: " + tile.x + ", y: " + tile.y;
+        });
+        
+        this.player.doors = this.doors;
         
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
@@ -67,6 +84,9 @@ Level1Risky.prototype = {
     handleDoor: function(doorX, doorY, goingIn, open) {
         var state = "Office";
         if (goingIn && !open) {
+            var doorPos = "x: " + doorX + ", y: " + doorY;
+            var doorNum = this.doors.indexOf(doorPos);
+            
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
             // Put down placeholder tile to prevent movement onto door while opening
@@ -74,7 +94,7 @@ Level1Risky.prototype = {
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
-                this.goThroughDoor(doorX, doorY, state, goingIn);
+                this.goThroughDoor(doorX, doorY, state, goingIn, doorNum);
             }, this);
         } else {
             if (!goingIn) {

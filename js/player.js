@@ -220,7 +220,7 @@ Player.prototype.map = null;
 Player.prototype.obstacles = null;
 Player.prototype.objects = null;
 
-Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
+Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
     var facing;
     if (goingIn) {
         facing = moveType.UP;
@@ -228,10 +228,16 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
         facing = moveType.DOWN;
     }
 
+    if (doorNum === undefined) {
+        doorNum = -1;
+    }
+
+    localStorage.setItem(state + "DoorNum", JSON.stringify(doorNum));
+
     var data = {
             x: this.xCoord,
             y: this.yCoord,
-            facing: facing
+            facing: facing,
     }
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
 

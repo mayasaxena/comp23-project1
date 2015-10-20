@@ -1,0 +1,63 @@
+{
+    "locations" : [
+        {
+            "admin" : "a",
+             "assistance" : 1,
+             "factor" : 1
+        },
+
+        {
+            "admin" : null,
+            "assistance" : null,
+            "factor" : null
+        },
+
+        {   
+            "admin" : "b",
+            "assistance" : -1,
+            "factor" : null
+        },
+
+        {
+            "admin" : "c",
+            "assistance" : 1,
+            "factor" : 0
+        },
+
+        {
+            "admin" : null,
+            "assistance" : null,
+            "factor" : null
+        },
+
+        { 
+            "admin" : "d",
+            "assistance" : -1,
+            "factor" : null
+        },
+
+        {
+            "admin" : null,
+            "assistance" : null,
+            "factor" : null
+        },
+
+        {
+            "admin" : "target",
+            "assistance" : null,
+            "factor" : null
+        },
+
+        {
+            "admin" : null,
+            "assistance" : null,
+            "factor" : null
+        },
+
+        { 
+            "admin" : "e",
+            "assistance" : 1,
+            "factor" : 1
+        }
+    ]
+}

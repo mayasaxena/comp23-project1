@@ -4,6 +4,7 @@ Office.prototype = {
     preload: function() {
         console.log("Office");
         this.game.load.tilemap('office', 'assets/tilemaps/maps/office.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.json("offices", 'assets/level_json/risky_admin_locations.json');
     },
 
     create: function() {
@@ -17,6 +18,12 @@ Office.prototype = {
             this.startX = 2;
             this.startY = 4;
             this.facing = facingForwardIndex;
+        }
+
+        var adminData = JSON.parse(localStorage.getItem(this.game.state.current + "DoorNum"));
+        if (adminData !== undefined) {
+            var office = this.game.cache.getJSON("offices").locations[adminData];
+            console.log(office);
         }
 
         this.map = this.game.add.tilemap('office');
@@ -36,6 +43,7 @@ Office.prototype = {
         this.game.camera.bounds = null;
         this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN);
         this.game.renderer.renderSession.roundPixels = true;
+
 
         var graphics = this.game.add.graphics(0, 0);
         graphics.beginFill(0x000000);
