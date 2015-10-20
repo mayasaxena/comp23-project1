@@ -9,6 +9,7 @@ Level1Slow.prototype = {
     preload: function() {
         console.log("Slow");
         this.game.load.tilemap('slowRoom', 'assets/tilemaps/maps/slow_tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.audio('slowBackground', 'assets/audio/slow_music.mp3');
     },
 
     create: function() {
@@ -21,6 +22,9 @@ Level1Slow.prototype = {
             this.startX = 1;
             this.startY = 7;
         }
+        //music
+        music = this.game.add.audio('slowBackground');
+        music.play();
 
         this.map = this.game.add.tilemap('slowRoom');
         this.map.addTilesetImage('slow_tileset', 'slow_tiles');
@@ -39,11 +43,11 @@ Level1Slow.prototype = {
         //MAYA this is where I think I am doing the assignment
         this.player.handleDoor = this.handleDoor;
         this.player.handleFile = this.handleFile;
-        this.player.map.createFromTiles(fileIndex, floorIndex, this.obstacles);
+        // this.player.map.createFromTiles(fileIndex, floorIndex, this.obstacles);
     
 
         // Create layer after player so it renders above
-        this.overhead = this.map.createLayer("Roof");
+        // this.overhead = this.map.createLayer("Roof");
         
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
@@ -92,22 +96,25 @@ Level1Slow.prototype = {
         }
     },
 
-    handleFile: function(oldPos, newPos){
-        //moving file up
-        console.log("handle file");
+
+    handleFile: function(oldPos, newPos) {
         var newFile = new File(this.game, oldPos.x * tileSize, oldPos.y * tileSize);
-        console.log("oldPos.x: " + oldPos.x + ", newPos.x: " + newPos.x);
-        console.log("oldPos.y: " + oldPos.y + ", newPos.y: " + newPos.y);
-        if(oldPos.y > newPos.y){
-            newFile.moveUp(newPos.x, newPos.y);
+        this.map.removeTile(oldPos.x, oldPos.y, this.obstacles);
+       // console.log("oldPos.x: " + oldPos.x + ", newPos.x: " + newPos.x);
+        //console.log("oldPos.y: " + oldPos.y + ", newPos.y: " + newPos.y);
+        
+        var tween;
+        // if (oldPos.y > newPos.y){
+        tween = newFile.move(newPos.x, newPos.y);
+        //}
+        if (tween) { 
+            tween.onComplete.add(function() {
+                // Remove filing cabinet sprite
+                newFile.kill();
+                // Replace with tile so can continue colliding
+                this.map.putTile(fileIndex, newPos.x, newPos.y, this.obstacles);
+            }, this);
         }
 
     }
 };
-
-
-
-
-
-
-

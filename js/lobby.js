@@ -8,10 +8,11 @@ Lobby.prototype = {
         this.game.load.image('player', 'assets/images/player_new.png');
         this.game.load.spritesheet('door_animation', 'assets/images/animation/risky_door_animation.png', 32, 32);
         this.game.load.spritesheet('walk', 'assets/images/animation/player_walk.png', 32, 32);
-
+        this.game.load.image('file', 'assets/images/file.png');
         this.game.load.tilemap('background', 'assets/tilemaps/maps/lobby.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tilemaps/tiles/risky_tileset.png');
         this.game.load.image('slow_tiles', 'assets/tilemaps/tiles/slow_tileset.png');
+        this.game.load.audio('lobbyMusic', 'assets/audio/lobby_music.mp3');
     },
 
     create: function() {
@@ -26,6 +27,10 @@ Lobby.prototype = {
             this.startY = 5;
             this.facing = facingForwardIndex;
         }
+        //music
+        music = this.game.add.audio('lobbyMusic');
+        music.play();
+
         this.map = this.game.add.tilemap('background');
         this.map.addTilesetImage('risky_tileset', 'tiles');
 
@@ -57,9 +62,11 @@ Lobby.prototype = {
     handleDoor: function(doorX, doorY, goingIn, open) {
         var state;
         if(doorX == 2){
+            music.fadeOut(800);
             state = 'Level1Risky';
         }
         else if(doorX == 6){
+            music.fadeOut(800);
             state = 'Level1Slow';
         }
         if (goingIn && !open) {

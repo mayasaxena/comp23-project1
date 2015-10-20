@@ -14,11 +14,12 @@ function File(game, x, y) {
     this.destination = null;
 }
 
-File.prototype.moveUp = function(x, y) {
-	console.log("move up");
+File.prototype.move = function(x, y) {
+	console.log("move");
 	//x and y, the parameters, are where the file should move
     var tween = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, y: y * tileSize + backgroundY}, 
     											tweenTime, Phaser.Easing.Linear.None, true);
+    return tween;
 }
 
 

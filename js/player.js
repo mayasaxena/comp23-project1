@@ -155,6 +155,7 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
     var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
     if (tile) {
+        console.log("potential tile index: " + tile.index);
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
             return false;
@@ -165,8 +166,6 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
         } else if (tile.index == fileIndex){
-           // console.log("on file");
-            //newPos is a file, so that becomes the current tile 
             return this.canFileMoveDirection(newPos, direction);
         } else if (tile.index == adminIndex) {
             this.handleAdmin();
@@ -174,19 +173,23 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
         }
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     }else {
+        console.log("null tile?")
         return true;
     }
 }
-Player.prototype.canFileMoveDirection = function(currTile, direction){
+Player.prototype.canFileMoveDirection = function(filecurrTile, direction){
     //new Pos is the potential new position of the file
-    console.log("can file move dir, currTile.x: " + currTile.x + " currTile.y =" + currTile.y);
-    var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
-    console.log("can file move dir, newPos.x: " + newPos.x + " newPos.y =" + newPos.y);
-
-    var tile = (this.map.getTile(newPos.x, newPos.y, this.Collisions));
+    console.log("can file move dir, filecurrTile.x: " + filecurrTile.x + " filecurrTile.y =" + filecurrTile.y);
+    var newfilePos = this.getTileAdjacentToTile(filecurrTile.x, filecurrTile.y, direction);
+    console.log("can file move dir, newfilePos.x: " + newfilePos.x + " newfilePos.y =" + newfilePos.y);
+    //MAYA.....tile2 is always null...seems like it is not grabbing a tile
+    // from the correct layer. should be getting them from this.obstacles but
+    // that doesn't seem to be working...
+    var tile2 = (this.map.getTile(newfilePos.x, newfilePos.y, this.obstacles, true));
+    console.log("tile2 index is: "+ tile2.index)
     //return (this.map.collideIndexes.indexOf(tile.index) == -1);
-    if (tile) {
-        console.log("tile index is: "+ tile.index)
+    if (tile2) {
+        console.log("tile2 index is: "+ tile2.index)
         //will look into uncomenting this section later
        /* if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
@@ -205,17 +208,21 @@ Player.prototype.canFileMoveDirection = function(currTile, direction){
             //newPos is a file, so that becomes the current tile 
             return this.canFileMoveDirection(newPos, direction);
         }*/
-        if(tile.index == fileIndex){
+        if(tile2.index == fileIndex){
             console.log("hit another file?");
             return false;
         }
-        if(tile.index == floorIndex){
+        if(tile2.index == -1){
             console.log("should be able to move, nothing in way");
-            this.handleFile(currTile, newPos);
+            this.handleFile(filecurrTile, newfilePos);
             return true;
         }
-        console.log("what else could this be? " + tile.index);
-        return (this.map.collideIndexes.indexOf(tile.index) == -1);
+        if(tile2.index == 14){
+            console.log("wall");
+            return false;
+        }
+        //console.log("what else could this be? " + tile2.index);
+        //return (this.map.collideIndexes.indexOf(tile2.index) == -1);
     }else {
         console.log("null tile")
         //pass in currtile as the old position
@@ -261,6 +268,7 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
 
     if (goingIn) {
+
         var doorPosString = x + "," + y;
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
@@ -292,7 +300,7 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
     graphics.drawRect(0, 0, 1280, this.game.height);
     graphics.alpha = 0;
     graphics.endFill();
-    
+
     var fadeOut = this.game.add.tween(graphics).to({ alpha: 1 }, 500);   
     move.chain(fadeOut);
 

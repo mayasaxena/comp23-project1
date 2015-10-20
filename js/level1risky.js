@@ -1,6 +1,7 @@
 var tileSize = 32;
 var backgroundX = 0;
 var backgroundY = 0;
+var musicPlaying = false;
 
 function Level1Risky() {}
 
@@ -8,6 +9,7 @@ Level1Risky.prototype = {
     preload: function() {
         console.log("Risky but Rewarding");
         this.game.load.tilemap('hallway', 'assets/tilemaps/maps/risky.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.audio('riskyBackground', 'assets/audio/risky_music.mp3');
     },
 
     create: function() {
@@ -22,6 +24,13 @@ Level1Risky.prototype = {
             this.startY = 8;
             this.facing = facingForwardIndex;
         }
+        //prevent music from layering when reentering level
+        if(musicPlaying == false){
+            music = this.game.add.audio('riskyBackground');
+            music.play();
+            musicPlaying = true;
+        }
+        
 
         this.map = this.game.add.tilemap('hallway');
         this.map.addTilesetImage('risky_tileset', 'tiles');
