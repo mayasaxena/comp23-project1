@@ -12,10 +12,6 @@ Game.prototype = {
     }
 };
 
-$(document).ready(function(){
-    $("#dialog_box").hide();
-});
-
 var game = new Game();
 localStorage.clear();
 game.start();

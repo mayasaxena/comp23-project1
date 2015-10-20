@@ -57,18 +57,17 @@ Lobby.prototype = {
         tween.start();
     },
 
-
     // handles both doors in the lobby
     handleDoor: function(doorX, doorY, goingIn, open) {
         var state;
-        if(doorX == 2){
+        if (doorX == 2) {
             music.fadeOut(800);
             state = 'Level1Risky';
-        }
-        else if(doorX == 6){
+        } else if (doorX == 6) {
             music.fadeOut(800);
             state = 'Level1Slow';
         }
+        
         if (goingIn && !open) {
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();

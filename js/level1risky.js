@@ -30,7 +30,6 @@ Level1Risky.prototype = {
             music.play();
             musicPlaying = true;
         }
-        
 
         this.map = this.game.add.tilemap('hallway');
         this.map.addTilesetImage('risky_tileset', 'tiles');
@@ -98,13 +97,16 @@ Level1Risky.prototype = {
             
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
+
             // Put down placeholder tile to prevent movement onto door while opening
             this.map.putTile(11, doorX, doorY, this.obstacles);
+
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
                 this.goThroughDoor(doorX, doorY, state, goingIn, doorNum);
             }, this);
+            
         } else {
             if (!goingIn) {
                 state = 'Lobby';

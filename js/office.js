@@ -35,7 +35,6 @@ Office.prototype = {
         this.map.addTilesetImage('risky_tileset', 'tiles');
 
         this.floors = this.map.createLayer("Floor");
-        // this.objects = this.map.createLayer("Objects");
         this.obstacles = this.map.createLayer("Collisions");
 
         this.map.setCollisionByExclusion([], true, this.obstacles);
@@ -68,13 +67,16 @@ Office.prototype = {
         if (goingIn && !open) {
             var newDoor = new Door(this.game, doorX * tileSize + backgroundX, doorY * tileSize + backgroundY);
             newDoor.open();
+
             // Put down placeholder tile to prevent movement onto door while opening
             this.map.putTile(11, doorX, doorY, this.obstacles);
+            
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
                 this.goThroughDoor(doorX, doorY, state, goingIn);
             }, this);
+
         } else {
             this.goThroughDoor(doorX, doorY, state, goingIn);
         }
@@ -85,6 +87,7 @@ Office.prototype = {
             $("#dialog_box").show();
             $("#dialog_box").text(this.office.text);
         }
+
         if (this.office.admin === "target") {
             console.log("Won!");
             var graphics = this.game.add.graphics(0, 0);

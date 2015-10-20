@@ -30,25 +30,17 @@ Level1Slow.prototype = {
         this.map.addTilesetImage('slow_tileset', 'slow_tiles');
 
         this.floors = this.map.createLayer("Floor");
-        //this.objects = this.map.createLayer("Files");
         this.obstacles = this.map.createLayer("Collisions");
 
-       // this.map.setCollisionByExclusion([], true, this.objects);
         this.map.setCollisionByExclusion([17], true, this.obstacles);
 
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
         this.player.map = this.map;
         this.player.obstacles = this.obstacles;
-        //this.player.objects = this.objects;
-        //MAYA this is where I think I am doing the assignment
+
         this.player.handleDoor = this.handleDoor;
         this.player.handleFile = this.handleFile;
-        // this.player.map.createFromTiles(fileIndex, floorIndex, this.obstacles);
-    
 
-        // Create layer after player so it renders above
-        // this.overhead = this.map.createLayer("Roof");
-        
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
             for (var i = 0; i < openDoors.length; i++) {
@@ -96,17 +88,11 @@ Level1Slow.prototype = {
         }
     },
 
-
     handleFile: function(oldPos, newPos) {
         var newFile = new File(this.game, oldPos.x * tileSize, oldPos.y * tileSize);
         this.map.removeTile(oldPos.x, oldPos.y, this.obstacles);
-       // console.log("oldPos.x: " + oldPos.x + ", newPos.x: " + newPos.x);
-        //console.log("oldPos.y: " + oldPos.y + ", newPos.y: " + newPos.y);
         
-        var tween;
-        // if (oldPos.y > newPos.y){
-        tween = newFile.move(newPos.x, newPos.y);
-        //}
+        var tween = newFile.move(newPos.x, newPos.y);
         if (tween) { 
             tween.onComplete.add(function() {
                 // Remove filing cabinet sprite
@@ -115,6 +101,5 @@ Level1Slow.prototype = {
                 this.map.putTile(fileIndex, newPos.x, newPos.y, this.obstacles);
             }, this);
         }
-
     }
 };

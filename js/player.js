@@ -11,8 +11,6 @@ var frameRate = 7;
 var adminIndex = 30;
 var floorIndex = 7;
 
-
-
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.constructor = Player;
@@ -150,12 +148,14 @@ Player.prototype.isMoving = function() {
 }
 
 Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
-    var currTile = this.getCurrentTile();
+    // Hide dialog box on movement so disappears after interaction
     $("#dialog_box").hide();
+
+    var currTile = this.getCurrentTile();
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
+
     var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
     if (tile) {
-        console.log("potential tile index: " + tile.index);
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
             return false;
@@ -165,68 +165,33 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
         } else if (tile.index == matIndex) {
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
-        } else if (tile.index == fileIndex){
+        } else if (tile.index == fileIndex) {
             return this.canFileMoveDirection(newPos, direction);
         } else if (tile.index == adminIndex) {
             this.handleAdmin();
             return false;
         }
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
-    }else {
-        console.log("null tile?")
+    } else {
         return true;
     }
 }
 Player.prototype.canFileMoveDirection = function(filecurrTile, direction){
-    //new Pos is the potential new position of the file
-    console.log("can file move dir, filecurrTile.x: " + filecurrTile.x + " filecurrTile.y =" + filecurrTile.y);
     var newfilePos = this.getTileAdjacentToTile(filecurrTile.x, filecurrTile.y, direction);
-    console.log("can file move dir, newfilePos.x: " + newfilePos.x + " newfilePos.y =" + newfilePos.y);
-    //MAYA.....tile2 is always null...seems like it is not grabbing a tile
-    // from the correct layer. should be getting them from this.obstacles but
-    // that doesn't seem to be working...
+    
     var tile2 = (this.map.getTile(newfilePos.x, newfilePos.y, this.obstacles, true));
-    console.log("tile2 index is: "+ tile2.index)
-    //return (this.map.collideIndexes.indexOf(tile.index) == -1);
     if (tile2) {
-        console.log("tile2 index is: "+ tile2.index)
-        //will look into uncomenting this section later
-       /* if (tile.index == doorIndex) {
-            this.handleDoor(newPos.x, newPos.y, true);
-            console.log("door index");
-            return false;
-        }else if (tile.index == doorwayIndex) {
-            this.handleDoor(newPos.x, newPos.y, true, true);
-            console.log("doorway index");
-            return false;    
-        } else if (tile.index == matIndex) {
-            console.log("mat index");
-            this.handleDoor(newPos.x, newPos.y, false);
-            return false;
-        } else if (tile.index == fileIndex){
-            console.log("on file");
-            //newPos is a file, so that becomes the current tile 
-            return this.canFileMoveDirection(newPos, direction);
-        }*/
-        if(tile2.index == fileIndex){
-            console.log("hit another file?");
+        if (tile2.index == fileIndex){
             return false;
         }
-        if(tile2.index == -1){
-            console.log("should be able to move, nothing in way");
+        if (tile2.index == -1){
             this.handleFile(filecurrTile, newfilePos);
             return true;
         }
-        if(tile2.index == 14){
-            console.log("wall");
+        if (tile2.index == 14){
             return false;
         }
-        //console.log("what else could this be? " + tile2.index);
-        //return (this.map.collideIndexes.indexOf(tile2.index) == -1);
-    }else {
-        console.log("null tile")
-        //pass in currtile as the old position
-        //this.handleFile(currTile, newPos);
+    } else {
         return true;
     }
 }
@@ -247,19 +212,17 @@ Player.prototype.obstacles = null;
 Player.prototype.objects = null;
 
 Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
+    if (doorNum === undefined) {
+        doorNum = -1;
+    }
+    localStorage.setItem(state + "DoorNum", JSON.stringify(doorNum));
+
     var facing;
     if (goingIn) {
         facing = moveType.UP;
     } else {
         facing = moveType.DOWN;
     }
-
-    if (doorNum === undefined) {
-        doorNum = -1;
-    }
-
-    localStorage.setItem(state + "DoorNum", JSON.stringify(doorNum));
-
     var data = {
             x: this.xCoord,
             y: this.yCoord,
@@ -268,7 +231,6 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
 
     if (goingIn) {
-
         var doorPosString = x + "," + y;
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
