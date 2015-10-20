@@ -82,7 +82,7 @@ Level1Slow.prototype = {
             newDoor.open();
             console.log("placeholder");
             // Put down placeholder tile to prevent movement onto door while opening
-            this.map.putTile(11, doorX, doorY, this.obstacles);
+            this.map.putTile(5, doorX, doorY, this.obstacles);
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
