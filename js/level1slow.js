@@ -1,5 +1,4 @@
 var tileSize = 32;
-var tweenTime = 250;
 var backgroundX = 0;
 var backgroundY = 0;
 var doorPlaceholder = 10;
@@ -9,8 +8,8 @@ function Level1Slow() {}
 Level1Slow.prototype = {
     preload: function() {
         console.log("Slow");
-        this.game
         this.game.load.tilemap('slowRoom', 'assets/tilemaps/maps/slow_tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.audio('slowBackground', 'assets/audio/slow_music.mp3');
     },
 
     create: function() {
@@ -23,25 +22,25 @@ Level1Slow.prototype = {
             this.startX = 1;
             this.startY = 7;
         }
+        //music
+        music = this.game.add.audio('slowBackground');
+        music.play();
 
         this.map = this.game.add.tilemap('slowRoom');
         this.map.addTilesetImage('slow_tileset', 'slow_tiles');
 
         this.floors = this.map.createLayer("Floor");
-        this.objects = this.map.createLayer("Files");
-        this.obstacles = this.map.createLayer("Walls");
+        this.obstacles = this.map.createLayer("Collisions");
 
-        this.map.setCollisionByExclusion([], true, this.objects);
-        this.map.setCollisionByExclusion([], true, this.obstacles);
+        this.map.setCollisionByExclusion([17], true, this.obstacles);
 
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize);
         this.player.map = this.map;
         this.player.obstacles = this.obstacles;
-        this.player.handleDoor = this.handleDoor;
 
-        // Create layer after player so it renders above
-        this.overhead = this.map.createLayer("Roof");
-        
+        this.player.handleDoor = this.handleDoor;
+        this.player.handleFile = this.handleFile;
+
         var openDoors = JSON.parse(localStorage.getItem(this.game.state.current + "Doors"));
         if (openDoors) {
             for (var i = 0; i < openDoors.length; i++) {
@@ -75,7 +74,7 @@ Level1Slow.prototype = {
             newDoor.open();
             console.log("placeholder");
             // Put down placeholder tile to prevent movement onto door while opening
-            this.map.putTile(11, doorX, doorY, this.obstacles);
+            this.map.putTile(5, doorX, doorY, this.obstacles);
             // Remove door obstacle so player can go through
             newDoor.events.onAnimationComplete.add(function() {
                 this.map.removeTile(doorX, doorY, this.obstacles);
@@ -86,6 +85,21 @@ Level1Slow.prototype = {
                 state = 'Lobby';
             }
             this.goThroughDoor(doorX, doorY, state, goingIn);
+        }
+    },
+
+    handleFile: function(oldPos, newPos) {
+        var newFile = new File(this.game, oldPos.x * tileSize, oldPos.y * tileSize);
+        this.map.removeTile(oldPos.x, oldPos.y, this.obstacles);
+        
+        var tween = newFile.move(newPos.x, newPos.y);
+        if (tween) { 
+            tween.onComplete.add(function() {
+                // Remove filing cabinet sprite
+                newFile.kill();
+                // Replace with tile so can continue colliding
+                this.map.putTile(fileIndex, newPos.x, newPos.y, this.obstacles);
+            }, this);
         }
     }
 };

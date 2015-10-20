@@ -1,5 +1,5 @@
 var tileSize = 32;
-var tweenTime = 250;
+var tweenTime = 490;
 var size = { x: 32, y: 32 };
 var stateChangeDelay = 500;
 var doorIndex = 2;
@@ -7,19 +7,27 @@ var doorwayIndex = 10;
 var matIndex = 22;
 var edgeIndex = 1;
 var fileIndex = 17;
-
+var frameRate = 7;
+var adminIndex = 30;
+var floorIndex = 7;
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 
 Player.prototype.constructor = Player;
 
-function Player(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'player');
+function Player(game, x, y, facing) {
+    Phaser.Sprite.call(this, game, x, y, 'walk', facing);
     this.game.add.existing(this);
+    this.animations.add("front", [1, 0, 2, 0]);
+    this.animations.add("back", [4, 3, 5, 3]);
+    this.animations.add("left", [7, 6, 8, 6]);
+    this.animations.add("right", [10, 9, 11, 9]);
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.destination = null;
+
+    this.currAnimation = null;
 }
 
 Player.prototype.update = function() {
@@ -109,6 +117,16 @@ Player.prototype.stopMoving = function() {
 
 Player.prototype.snapToTile = function(x, y) {
     this.isSnapping = true;
+    
+    if (y < this.yCoord) {
+        this.currAnimation = this.animations.play("back", frameRate, true);
+    } else if (y > this.yCoord) {
+        this.currAnimation = this.animations.play("front", frameRate, true);
+    } else if (x < this.xCoord) {
+        this.currAnimation = this.animations.play("left", frameRate, true);
+    } else if (x > this.xCoord) {
+        this.currAnimation = this.animations.play("right", frameRate, true);
+    }
     var tween = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 
@@ -130,30 +148,49 @@ Player.prototype.isMoving = function() {
 }
 
 Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
+    // Hide dialog box on movement so disappears after interaction
+    $("#dialog_box").hide();
+
     var currTile = this.getCurrentTile();
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
+
     var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
     if (tile) {
         if (tile.index == doorIndex) {
             this.handleDoor(newPos.x, newPos.y, true);
-            console.log("door index");
             return false;
-        }else if (tile.index == doorwayIndex) {
+        } else if (tile.index == doorwayIndex) {
             this.handleDoor(newPos.x, newPos.y, true, true);
-            console.log("doorway index");
             return false;    
         } else if (tile.index == matIndex) {
-            console.log("mat index");
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
         } else if (tile.index == fileIndex) {
-            console.log("file index");
-            this.handleFile();
+            return this.canFileMoveDirection(newPos, direction);
+        } else if (tile.index == adminIndex) {
+            this.handleAdmin();
             return false;
-            
         }
-
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
+    } else {
+        return true;
+    }
+}
+Player.prototype.canFileMoveDirection = function(filecurrTile, direction){
+    var newfilePos = this.getTileAdjacentToTile(filecurrTile.x, filecurrTile.y, direction);
+    
+    var tile2 = (this.map.getTile(newfilePos.x, newfilePos.y, this.obstacles, true));
+    if (tile2) {
+        if (tile2.index == fileIndex){
+            return false;
+        }
+        if (tile2.index == -1){
+            this.handleFile(filecurrTile, newfilePos);
+            return true;
+        }
+        if (tile2.index == 14){
+            return false;
+        }
     } else {
         return true;
     }
@@ -161,17 +198,35 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
 
 Player.prototype.stopSnap = function() {
     this.isSnapping = false;
+    if (this.currAnimation && !this.isMoving()) {
+        this.currAnimation.stop();
+        this.currAnimation.setFrame(3);
+    } 
 }
 
+Player.prototype.handleAdmin = function() {};
 Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
-Player.prototype.handleFile = function() {};
+Player.prototype.handleFile = function(oldPos, newPos) {};
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
+Player.prototype.objects = null;
 
-Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
+Player.prototype.goThroughDoor = function(x, y, state, goingIn, doorNum) {
+    if (doorNum === undefined) {
+        doorNum = -1;
+    }
+    localStorage.setItem(state + "DoorNum", JSON.stringify(doorNum));
+
+    var facing;
+    if (goingIn) {
+        facing = moveType.UP;
+    } else {
+        facing = moveType.DOWN;
+    }
     var data = {
             x: this.xCoord,
-            y: this.yCoord
+            y: this.yCoord,
+            facing: facing,
     }
     localStorage.setItem(this.game.state.current, JSON.stringify(data));
 
@@ -188,7 +243,15 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
         }
         localStorage.setItem(this.game.state.current + "Doors", JSON.stringify(openDoors));
     }
-
+    if (y < this.yCoord) {
+        this.currAnimation = this.animations.play("back", frameRate, true);
+    } else if (y > this.yCoord) {
+        this.currAnimation = this.animations.play("front", frameRate, true);
+    } else if (x < this.xCoord) {
+        this.currAnimation = this.animations.play("left", frameRate, true);
+    } else if (x > this.xCoord) {
+        this.currAnimation = this.animations.play("right", frameRate, true);
+    }
     var move = this.game.add.tween(this).to({ x: x * tileSize + backgroundX, 
                                                       y: y * tileSize + backgroundY}, 
                                                       tweenTime, 
@@ -199,7 +262,7 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     graphics.drawRect(0, 0, 1280, this.game.height);
     graphics.alpha = 0;
     graphics.endFill();
-    
+
     var fadeOut = this.game.add.tween(graphics).to({ alpha: 1 }, 500);   
     move.chain(fadeOut);
 
@@ -208,9 +271,21 @@ Player.prototype.goThroughDoor = function(x, y, state, goingIn) {
     }, this);
 }
 
+Player.prototype.opposite = function(move) {
+    if (move === moveType.UP) {
+        return moveType.DOWN;
+    } else if (move === moveType.DOWN) {
+        return moveType.UP;
+    } else if (move === moveType.LEFT) {
+        return moveType.RIGHT;
+    } else if (move === moveType.RIGHT) {
+        return moveType.LEFT;
+    }
+}
+
 var moveType = {
-    'UP': 1,
-    'DOWN': 2,
-    'LEFT': 4,
-    'RIGHT': 8
+    'UP': 12,
+    'DOWN': 3,
+    'LEFT': 6,
+    'RIGHT': 9
 };
