@@ -165,7 +165,7 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
             this.handleDoor(newPos.x, newPos.y, false);
             return false;
         } else if (tile.index == fileIndex){
-            console.log("on file");
+           // console.log("on file");
             //newPos is a file, so that becomes the current tile 
             return this.canFileMoveDirection(newPos, direction);
         } else if (tile.index == adminIndex) {
@@ -179,7 +179,10 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
 }
 Player.prototype.canFileMoveDirection = function(currTile, direction){
     //new Pos is the potential new position of the file
+    console.log("can file move dir, currTile.x: " + currTile.x + " currTile.y =" + currTile.y);
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
+    console.log("can file move dir, newPos.x: " + newPos.x + " newPos.y =" + newPos.y);
+
     var tile = (this.map.getTile(newPos.x, newPos.y, this.Collisions));
     //return (this.map.collideIndexes.indexOf(tile.index) == -1);
     if (tile) {
@@ -208,15 +211,14 @@ Player.prototype.canFileMoveDirection = function(currTile, direction){
         }
         if(tile.index == floorIndex){
             console.log("should be able to move, nothing in way");
-            //calling my handleFile
             this.handleFile(currTile, newPos);
             return true;
         }
         console.log("what else could this be? " + tile.index);
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     }else {
-        //pass in currtile as the old position
         console.log("null tile")
+        //pass in currtile as the old position
         //this.handleFile(currTile, newPos);
         return true;
     }

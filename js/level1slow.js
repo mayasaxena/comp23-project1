@@ -38,6 +38,7 @@ Level1Slow.prototype = {
         //this.player.objects = this.objects;
         //MAYA this is where I think I am doing the assignment
         this.player.handleDoor = this.handleDoor;
+        this.player.handleFile = this.handleFile;
         this.player.map.createFromTiles(fileIndex, floorIndex, this.obstacles);
     
 
@@ -94,9 +95,11 @@ Level1Slow.prototype = {
     handleFile: function(oldPos, newPos){
         //moving file up
         console.log("handle file");
-        var newFile = new File (this.game, oldPos.x * tileSize, oldPos.y * tileSize);
-        if(oldPos.x < newPos.x){
-            newFile.moveUp(newPos.x, oldPos.y);
+        var newFile = new File(this.game, oldPos.x * tileSize, oldPos.y * tileSize);
+        console.log("oldPos.x: " + oldPos.x + ", newPos.x: " + newPos.x);
+        console.log("oldPos.y: " + oldPos.y + ", newPos.y: " + newPos.y);
+        if(oldPos.y > newPos.y){
+            newFile.moveUp(newPos.x, newPos.y);
         }
 
     }
