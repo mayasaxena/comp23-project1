@@ -3,7 +3,8 @@
         {
             "admin" : "a",
              "assistance" : 1,
-             "factor" : 1
+             "factor" : 1,
+             "text" : "I think she went around the corner."
         },
 
         {
@@ -15,13 +16,15 @@
         {   
             "admin" : "b",
             "assistance" : -1,
-            "factor" : null
+            "factor" : null,
+            "text" : "Didn't your parents teach you how to knock? Get out!"
         },
 
         {
             "admin" : "c",
             "assistance" : 1,
-            "factor" : 0
+            "factor" : 0,
+            "text" : "Just missed her! She's been wandering, but she might already be on her break." 
         },
 
         {
@@ -33,7 +36,8 @@
         { 
             "admin" : "d",
             "assistance" : -1,
-            "factor" : null
+            "factor" : null,
+            "text" : "You can't just barge into my office! People are working here!"
         },
 
         {
@@ -45,7 +49,8 @@
         {
             "admin" : "target",
             "assistance" : null,
-            "factor" : null
+            "factor" : null,
+            "text" : "Oh, you need your add form signed? Of course! Why didn't you come to me in the first place?"
         },
 
         {
@@ -57,7 +62,8 @@
         { 
             "admin" : "e",
             "assistance" : 1,
-            "factor" : 1
+            "factor" : 1,
+            "text" : "Try a couple doors down, last I heard she was headed that way"
         }
     ]
 }

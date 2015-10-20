@@ -8,6 +8,7 @@ var matIndex = 22;
 var edgeIndex = 1;
 var fileIndex = 17;
 var frameRate = 7;
+var adminIndex = 30;
 
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -148,6 +149,7 @@ Player.prototype.isMoving = function() {
 
 Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
     var currTile = this.getCurrentTile();
+    $("#dialog_box").hide();
     var newPos = this.getTileAdjacentToTile(currTile.x, currTile.y, direction);
     var tile = (this.map.getTile(newPos.x, newPos.y, this.obstacles));
     if (tile) {
@@ -164,6 +166,9 @@ Player.prototype.canMoveDirectionFromCurrentTile = function(direction) {
             console.log("on file");
             //newPos is a file, so that becomes the current tile 
             return this.canFileMoveDirection(newPos, direction);
+        } else if (tile.index == adminIndex) {
+            this.handleAdmin();
+            return false;
         }
         return (this.map.collideIndexes.indexOf(tile.index) == -1);
     }else {
@@ -214,8 +219,9 @@ Player.prototype.stopSnap = function() {
     } 
 }
 
-Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {}
+Player.prototype.handleDoor = function(doorX, doorY, goingIn, open) {};
 Player.prototype.handleFile = function() {};
+Player.prototype.handleAdmin = function() {};
 Player.prototype.map = null;
 Player.prototype.obstacles = null;
 Player.prototype.objects = null;

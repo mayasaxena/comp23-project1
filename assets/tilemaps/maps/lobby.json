@@ -34,7 +34,7 @@
         {
          "firstgid":1,
          "image":"..\/tiles\/risky_tileset.png",
-         "imageheight":128,
+         "imageheight":160,
          "imagewidth":192,
          "margin":0,
          "name":"risky_tileset",
@@ -43,7 +43,7 @@
 
             },
          "spacing":0,
-         "tilecount":24,
+         "tilecount":30,
          "tileheight":32,
          "tilewidth":32
         }],
