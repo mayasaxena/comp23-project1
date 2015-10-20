@@ -8,6 +8,7 @@ Lobby.prototype = {
         this.game.load.image('player', 'assets/images/player_new.png');
         this.game.load.spritesheet('door_animation', 'assets/images/animation/risky_door_animation.png', 32, 32);
         this.game.load.spritesheet('walk', 'assets/images/animation/player_walk.png', 32, 32);
+        this.game.load.image("ming", "assets/images/ming.png");
         this.game.load.image('file', 'assets/images/file.png');
         this.game.load.tilemap('background', 'assets/tilemaps/maps/lobby.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tilemaps/tiles/risky_tileset.png');
@@ -36,14 +37,18 @@ Lobby.prototype = {
 
         this.floors = this.map.createLayer("Floor");
         this.obstacles = this.map.createLayer("Collisions");
-
         this.map.setCollisionByExclusion([], true, this.obstacles);
 
         this.player = new Player(this.game, this.startX * tileSize, this.startY * tileSize, this.facing);
         this.player.map = this.map
         this.player.obstacles = this.obstacles;
         this.player.handleDoor = this.handleDoor;
+        this.player.handleAdmin = this.handleAdmin;
 
+        this.admin = this.game.add.sprite(4 * tileSize, 2.75 * tileSize, "ming");
+        this.objects = this.map.createLayer("Object");
+
+        
         this.game.camera.bounds = null;
         this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN);
         this.game.renderer.renderSession.roundPixels = true;
@@ -79,5 +84,10 @@ Lobby.prototype = {
                 this.goThroughDoor(doorX, doorY, state, goingIn);
             }, this);
         }
+    },
+
+    handleAdmin: function() {
+        $("#dialog_box").show();
+        $("#dialog_box").text("To add a class, you must find an administrator to sign off on your add form. There is one in each office, but finding them may pose a challenge.");
     }
 };
